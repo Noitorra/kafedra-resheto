@@ -6,9 +6,6 @@
 #include <fstream>
 #include <vector>
 
-#include <osg/Vec2d>
-#include <osg/Vec3d>
-
 using namespace std;
 
 

@@ -2,6 +2,17 @@
 #define SPEED_H
 
 #include "header.h"
+#include "cmath"
+
+template<typename type>
+inline type mod_vec(std::vector<type>& vec) {
+  type result = type(0);
+  std::vector<type>::iterator iter;
+  for(iter=vec.begin();iter!=vec.end();iter++) {
+    result += std::pow((*iter), 2);
+  }
+  return std::sqrt(result);
+}
 
 class Gas {
 public:
@@ -9,6 +20,41 @@ public:
         :mass(getMass)
     {}
     double mass;
+
+};
+
+class Impulse {
+public:
+  Impulse(unsigned int size, double cutSpeed)
+    :n(size),
+     cut(cutSpeed) {
+    double* line_impulse = new double[n];
+    for(unsigned int i=0;i<n;i++) {
+      line_impulse[i] = cut*(2.0*i/(n-1)-1);
+      cout << "Inpulse[" << i << "] = " << line_impulse[i] << endl;
+    }
+    for(unsigned int x=0;x<n;x++)
+      for(unsigned int y=0;y<n;y++)
+        for(unsigned int z=0;z<n;z++) {
+          std::vector<double> impulse3d;
+          impulse3d.push_back(line_impulse[x]);
+          impulse3d.push_back(line_impulse[y]);
+          impulse3d.push_back(line_impulse[z]);
+          if(mod_vec(impulse3d) < cut) {
+            value.push_back(impulse3d);
+          }
+        }
+
+
+  }
+  ~Impulse() {}
+  // Impulse access
+  double cut;
+  unsigned int n;
+  std::vector<std::vector<double>> value;
+  double dP;
+  double d3P;
+protected:
 
 };
 
@@ -21,30 +67,9 @@ public:
         return s_Param;
     }
 
-    void Init() {
-        n = 20;
-        double* spd= new double[n];
-        for(unsigned int i=0;i<n;i++) {
-            spd[i] = cut*(2.0*i/(n-1)-1);
-        }
-        for(unsigned int i1=0;i1<n;i1++)
-           for(unsigned int i2=0;i2<n;i2++)
-               for(unsigned int i3=0;i3<n;i3++) {
-                   osg::Vec3d vec_speed(spd[i1],
-                                        spd[i2],
-                                        spd[i3]);
-                   if (vec_speed.length() < cut) {
-                       impulse.push_back(vec_speed);
-                   }
-               }
-    }
 
-    // Speed
-    unsigned int n;
-    double cut;
-    std::vector<osg::Vec3d> impulse;
-    double d3Impulse;
-    double dImpulse;
+    // Impulse
+    Impulse* impulse;
     // Global Program Params
     std::vector<Gas*> gas;
     double timestep;

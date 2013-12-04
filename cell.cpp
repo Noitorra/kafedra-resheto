@@ -1,4 +1,5 @@
 #include "cell.h"
+#include <cmath>
 #include <complex>
 
 template <typename T> int sgn(T val) {

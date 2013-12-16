@@ -3,6 +3,9 @@
 
 #include "param.h"
 
+inline double exp_erg(const double& mass, const double& temp, const double& imp);
+inline double exp_erg(const double& mass, const double& temp, const std::vector<double>& imp);
+
 class Cell {
 public:
     enum Dimention { X = 0,

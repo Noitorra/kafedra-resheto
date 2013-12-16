@@ -13,6 +13,10 @@ inline double exp_erg(const double& mass, const double& temp, const double& imp)
   return exp(-imp*imp/mass/2/temp);
 }
 
+inline double exp_erg(const double& mass, const double& temp, std::vector<double>& imp) {
+	return exp(-mod_vec(imp)/mass/2/temp);
+}
+
 // limitters
 namespace limitter{
 double super_bee(double x, double y, double z) {
@@ -28,10 +32,10 @@ void Cell::Init() {
     for(unsigned int impulseIndex;impulseIndex<P->impulse->value.size();impulseIndex++) {
         C += exp_erg(P->gas[gasIndex]->mass, T, mod_vec(P->impulse->value[impulseIndex]));
     }
-    C *= P->d3Impulse;
+	C *= P->impulse->d3P;
     C = 1.0/C;
-    for(unsigned int impulseIndex;impulseIndex<P->impulse.size();impuleIndex++) {
-        m_value[impulseIndex] = C*std::exp(-P->impulse[impulseIndex].lenght()/(2*mT));
+	for(unsigned int impulseIndex;impulseIndex<P->impulse->value.size();impulseIndex++) {
+		m_value[impulseIndex] = C*exp_erg(P->gas[gasIndex]->mass, T, mod_vec(P->impulse->value[impulseIndex]));
     }
 }
 
@@ -80,9 +84,9 @@ void Cell::ComputeValue(Cell::Dimention dim)
 void Cell::computeHalf_Normal(Dimention dim)
 {
     double y = P->timestep/P->gas[gasIndex]->mass;
-    for(unsigned int impulseIndex;impulseIndex<P->impulse.size();impuleIndex++) {
-        y *= std::abs(P->impulse[impulseIndex][dim]/m_h[dim]);
-        if(P->impulse[impulseIndex][dim] > 0) {
+    for(unsigned int impulseIndex;impulseIndex<P->impulse->value.size();impulseIndex++) {
+		y *= std::abs(P->impulse->value[impulseIndex][dim]/m_h[dim]);
+        if(P->impulse->value[impulseIndex][dim] > 0) {
             m_half[impulseIndex] = m_value[impulseIndex] + (1-y)/2*limitter::super_bee(m_prev[dim]->m_value[impulseIndex],
                                                                                        m_value[impulseIndex],
                                                                                        m_next[dim]->m_value[impulseIndex]);
@@ -97,8 +101,8 @@ void Cell::computeHalf_Normal(Dimention dim)
 void Cell::computeValue_Normal(Cell::Dimention dim)
 {
     double y = P->timestep/P->gas[gasIndex]->mass;
-    for(unsigned int impulseIndex;impulseIndex<P->impulse.size();impuleIndex++) {
-        y *= P->impulse[impulseIndex][dim]/m_h[dim];
+    for(unsigned int impulseIndex;impulseIndex<P->impulse->value.size();impulseIndex++) {
+		y *= P->impulse->value[impulseIndex][dim]/m_h[dim];
         m_value[impulseIndex] += -y*(m_half[impulseIndex] - m_prev[dim]->m_half[impulseIndex]);
       }
 }
@@ -109,9 +113,9 @@ void Cell::computeHalf_Left(Cell::Dimention dim)
   double C1_down = 0.0;
   double C2_up = 0.0;
   double y = P->timestep/P->gas[gasIndex]->mass;
-  for(unsigned int impulseIndex;impulseIndex<P->impulse.size();impulseIndex++) {
-    if(P->impulse[impulseIndex][dim] < 0) {
-        y *= std::abs(P->impulse[impulseIndex][dim]/m_h[dim]);
+  for(unsigned int impulseIndex;impulseIndex<P->impulse->value.size();impulseIndex++) {
+    if(P->impulse->value[impulseIndex][dim] < 0) {
+        y *= std::abs(P->impulse->value[impulseIndex][dim]/m_h[dim]);
 
         m_value[impulseIndex] = 2*m_next[dim]->m_next[dim]->m_value[impulseIndex] - m_next[dim]->m_value[impulseIndex];
         if (m_value[impulseIndex] < 0) m_value[impulseIndex] = 0;
@@ -120,17 +124,17 @@ void Cell::computeHalf_Left(Cell::Dimention dim)
                                                                                                 m_next[dim]->m_value[impulseIndex],
                                                                                                 m_next[dim]->m_next[dim]->m_value[impulseIndex]);
 
-        C1_up += abs(P->impulse[impulseIndex][dim]*m_half[impulseIndex]);
-        C2_up += abs(P->impulse[impulseIndex][dim]*(m_value[impulseIndex] + m_next[dim]->m_value[impulseIndex])/2);
+        C1_up += abs(P->impulse->value[impulseIndex][dim]*m_half[impulseIndex]);
+        C2_up += abs(P->impulse->value[impulseIndex][dim]*(m_value[impulseIndex] + m_next[dim]->m_value[impulseIndex])/2);
     } else {
-        C1_down += abs(P->impulse[impulseIndex][dim]*exp_erg(P->gas[gasIndex]->mass, T, P->impulse[impulseIndex][dim]));
+        C1_down += abs(P->impulse->value[impulseIndex][dim]*exp_erg(P->gas[gasIndex]->mass, T, P->impulse->value[impulseIndex][dim]));
     }
   }
 
-  for(unsigned int impulseIndex;impulseIndex<P->impulse.size();impulseIndex++) {
-    if(P->impulse[impulseIndex][dim] > 0) {
-        m_half[impulseIndex] = C1_up/C1_down*exp_erg(P->gas[gasIndex]->mass, T, P->impulse[impulseIndex]);
-        m_value[impulseIndex] = 2*C2_up/C1_down*exp_erg(P->gas[gasIndex]->mass, T, P->impulse[impulseIndex] - m_next[dim]->m_value[impulseIndex]);
+  for(unsigned int impulseIndex;impulseIndex<P->impulse->value.size();impulseIndex++) {
+    if(P->impulse->value[impulseIndex][dim] > 0) {
+        m_half[impulseIndex] = C1_up/C1_down*exp_erg(P->gas[gasIndex]->mass, T, P->impulse->value[impulseIndex]);
+		m_value[impulseIndex] = 2*C2_up/C1_down*exp_erg(P->gas[gasIndex]->mass, T, P->impulse->value[impulseIndex]) - m_next[dim]->m_value[impulseIndex];
         if(m_value[impulseIndex] < 0.0) m_value[impulseIndex] = 0.0;
     }
   }

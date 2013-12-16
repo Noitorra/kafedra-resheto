@@ -11,16 +11,22 @@ public:
 public:
     Cell() {}
     void Init();
-    void computeHalf(Dimention dim);
-    void computeValue(Dimention dim);
+
+    void ComputeHalf(Dimention dim);
+    void ComputeValue(Dimention dim);
+
+    void computeHalf_Normal(Dimention dim);
+    void computeValue_Normal(Dimention dim);
     // start var
     double T;
+    unsigned int gasIndex;
     std::vector<double> m_h;
 
     std::vector<Cell*> m_next;
     std::vector<Cell*> m_prev;
-    std::vector<double*> m_value;
-    std::vector<double*> m_half;
+
+    double* m_value;
+    double* m_half;
 };
 
 #endif // CELL_H

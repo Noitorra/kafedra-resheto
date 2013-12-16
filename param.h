@@ -4,15 +4,7 @@
 #include "header.h"
 #include "cmath"
 
-template<typename type>
-inline type mod_vec(std::vector<type>& vec) {
-  type result = type(0);
-  std::vector<type>::iterator iter;
-  for(iter=vec.begin();iter!=vec.end();iter++) {
-    result += std::pow((*iter), 2);
-  }
-  return std::sqrt(result);
-}
+double mod_vec(std::vector<double>& vec);
 
 class Gas {
 public:
@@ -24,6 +16,13 @@ public:
 };
 
 class Impulse {
+public:
+  // Impulse access
+  double cut;
+  unsigned int n;
+  std::vector< std::vector<double> > value;
+  double dP;
+  double d3P;
 public:
   Impulse(unsigned int size, double cutSpeed)
     :n(size),
@@ -48,12 +47,6 @@ public:
 
   }
   ~Impulse() {}
-  // Impulse access
-  double cut;
-  unsigned int n;
-  std::vector<std::vector<double>> value;
-  double dP;
-  double d3P;
 protected:
 
 };

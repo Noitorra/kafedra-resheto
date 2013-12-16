@@ -14,9 +14,18 @@ public:
 
     void ComputeHalf(Dimention dim);
     void ComputeValue(Dimention dim);
-
+    // Normal
     void computeHalf_Normal(Dimention dim);
     void computeValue_Normal(Dimention dim);
+    // Left
+    void computeHalf_Left(Dimention dim);
+    void computeValue_Left(Dimention dim);
+    // Right
+    void computeHalf_Right(Dimention dim);
+    void computeValue_Right(Dimention dim);
+    // PreRight
+    void computeHalf_PreRight(Dimention dim);
+    void computeValue_PreRight(Dimention dim);
     // start var
     double T;
     unsigned int gasIndex;

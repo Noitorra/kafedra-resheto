@@ -3,17 +3,28 @@
 
 #include "param.h"
 
-inline double exp_erg(const double& mass, const double& temp, const double& imp);
 inline double exp_erg(const double& mass, const double& temp, const std::vector<double>& imp);
 
 class Cell {
 public:
     enum Dimention { X = 0,
-                     Y = 0,
-                     Z = 0 };
+                     Y = 1,
+                     Z = 2 };
+	// start var
+    double T;
+    unsigned int gasIndex;
+    std::vector<double> m_h;
+
+    std::vector<Cell*> m_next;
+    std::vector<Cell*> m_prev;
+
+    double* m_value;
+    double* m_half;
 public:
-    Cell() {}
+    Cell();
     void Init();
+    double getTemperature();
+    double getDensity();
 
     void ComputeHalf(Dimention dim);
     void ComputeValue(Dimention dim);
@@ -29,16 +40,6 @@ public:
     // PreRight
     void computeHalf_PreRight(Dimention dim);
     void computeValue_PreRight(Dimention dim);
-    // start var
-    double T;
-    unsigned int gasIndex;
-    std::vector<double> m_h;
-
-    std::vector<Cell*> m_next;
-    std::vector<Cell*> m_prev;
-
-    double* m_value;
-    double* m_half;
 };
 
 #endif // CELL_H

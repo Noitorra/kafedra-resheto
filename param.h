@@ -12,7 +12,7 @@ public:
         :mass(getMass)
     {}
     double mass;
-
+    
 };
 
 class Impulse {
@@ -26,10 +26,14 @@ public:
 public:
   Impulse(unsigned int size, double cutSpeed)
     :n(size),
-     cut(cutSpeed) {
+     cut(cutSpeed) 
+  {
+    dP = 2*cut/(n-1);
+    d3P = std::pow(dP, 3);
     double* line_impulse = new double[n];
     for(unsigned int i=0;i<n;i++) {
-      line_impulse[i] = cut*(2.0*i/(n-1)-1);
+      //cut*(2.0*i/(n-1)-1);
+      line_impulse[i] = dP*i - cut;
       cout << "Inpulse[" << i << "] = " << line_impulse[i] << endl;
     }
     for(unsigned int x=0;x<n;x++)

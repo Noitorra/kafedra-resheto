@@ -6,20 +6,15 @@ using namespace std;
 
 int main()
 {
-//    // инициализируем скоростную сетку
-//    P->n = 20;
-//    P->Init();
-//    // конфигурация газов
-//    P->numOfGases = 2;
-//    P->gas.push_back(new Gas(1.0));
-//    P->gas.push_back(new Gas(0.5));
+  P->impulse = new Impulse(20, 4.8);
+  P->timestep = 0.1;
+  P->gas.push_back(new Gas(1.0));
+  P->gas.push_back(new Gas(0.5));
 
-
-
-//    // создаем главный класс расчета
-//    Solver solver;
-//    solver.Initialize();
-
-    return 0;
+  Solver solver;
+  solver.max_iter = 100;
+  solver.Initialize();
+  solver.Run();
+  return 0;
 }
 

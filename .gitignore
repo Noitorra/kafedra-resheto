@@ -41,6 +41,11 @@ local.properties
 *.user
 *.sln.docstates
 
+# Additional shit
+*.sln
+*.vcxproj
+*.filters
+
 # Build results
 
 [Dd]ebug/

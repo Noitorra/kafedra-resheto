@@ -1,0 +1,9 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+PROJECT(Resheto)
+
+file(GLOB R_SRC ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.h)
+
+source_group(Resheto FILES ${R_SRC})
+
+ADD_EXECUTABLE(Resheto ${R_SRC})

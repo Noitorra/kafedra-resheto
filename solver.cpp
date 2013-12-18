@@ -11,8 +11,8 @@ std::string ToString(T x) {
 
 Solver::Solver()
 {
-    Nx = 5;
-    Ny = 5;
+    Nx = 50;
+    Ny = 50;
     max_iter = 10;
     iter = 0;
 }
@@ -61,7 +61,7 @@ void Solver::Initialize() {
     GetCell(Nx-1, y)->Init();
   }
 
-  saveMacroData();
+  //saveMacroData();
 }
 
 void Solver::Load(const std::string& filename) {
@@ -101,12 +101,19 @@ void Solver::Run() {
 
 void Solver::saveMacroData() {
   std::string filename;
-  filename = "data/Den" + ToString(iter) + ".txt";
-  std::fstream filestream;
-  filestream.open(filename, std::fstream::out);
+  filename = "data/Den" + ToString(iter) + ".bin";
+
+  std::ofstream fs(filename, std::ios::out | std::ios::binary);
+  double* density = new double[Nx*Ny];
   for(unsigned int i=0;i<Nx*Ny;i++) {
-    filestream << ToString(i) << " " << ToString(m_cell[i]->getDensity()) << std::endl;
+    density[i] = m_cell[i]->getDensity();
+    //std::cout << i << " on "<< density[i] << std::endl;
+    fs.write(reinterpret_cast<const char*>(&density[i]), sizeof(double));
   }
-  filestream.close();
+  
+  //for(unsigned int i=0;i<Nx*Ny;i++) {
+  //  filestream << ToString(i) << " " << ToString(m_cell[i]->getDensity()) << std::endl;
+  //}
+  fs.close();
 }
 

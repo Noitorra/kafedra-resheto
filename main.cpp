@@ -12,7 +12,7 @@ int main()
   P->gas.push_back(new Gas(0.5));
 
   Solver solver;
-  solver.max_iter = 100;
+  solver.max_iter = 500;
   solver.Initialize();
   solver.Run();
   return 0;

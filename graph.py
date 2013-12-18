@@ -1,28 +1,21 @@
-"""
-Pyplot animation example.
-
-The method shown here is only for very simple, low-performance
-use.  For more demanding applications, look at the animation
-module and the examples that use it.
-"""
+__author__ = 'Дмитрий'
 
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy
 from numpy import *
 
 NX = 50
 NY = 50
-ITER = 500
+max_files = 500
 
-for i in range(ITER):
-    s = "Den%i" % (i)
-    D = np.fromfile('Den/'+s+'.bin',dtype=float).reshape(NX,NY)
+data_folder = 'd:/Work/kafedra-resheto-VS2012/data/'
+
+for i in range(max_files):
+    s = "%i" % i
+    D = numpy.fromfile(data_folder+'Den/'+s+'.bin', dtype=float).reshape(NX, NY)
     plt.imshow(D, vmin=0.5, vmax=1.0, interpolation='nearest')
     plt.colorbar()
-    plt.savefig('Den/Pic/'+s+'.png')
+    plt.savefig(data_folder+'Den/Pic/'+s+'.png')
     plt.close()
-    print("%i of %i" % (i, ITER))
-
-
-
+    print("%i of %i" % (i, max_files))
 

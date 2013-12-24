@@ -12,7 +12,6 @@ public:
         :mass(getMass)
     {}
     double mass;
-    
 };
 
 class Impulse {
@@ -26,7 +25,7 @@ public:
 public:
   Impulse(unsigned int size, double cutSpeed)
     :n(size),
-     cut(cutSpeed) 
+     cut(cutSpeed)
   {
     dP = 2*cut/(n-1);
     d3P = std::pow(dP, 3);
@@ -34,7 +33,7 @@ public:
     for(unsigned int i=0;i<n;i++) {
       //cut*(2.0*i/(n-1)-1);
       line_impulse[i] = dP*i - cut;
-      cout << "Inpulse[" << i << "] = " << line_impulse[i] << endl;
+      //cout << "Inpulse[" << i << "] = " << line_impulse[i] << endl;
     }
     for(unsigned int x=0;x<n;x++)
       for(unsigned int y=0;y<n;y++)
@@ -55,15 +54,18 @@ protected:
 
 };
 
-class Param
-{
+class Param {
 public:
+  enum MPI_Type { MPI_LEFT, MPI_NORMAL, MPI_RIGHT };
     Param() {}
     static Param* instance() {
         static Param *s_Param = new Param();
         return s_Param;
     }
-
+    // MPI Info
+    int mpi_rank;
+    int mpi_size;
+    MPI_Type mpi_type;
 
     // Impulse
     Impulse* impulse;

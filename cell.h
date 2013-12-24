@@ -12,19 +12,20 @@ public:
                      Z = 2 };
 	// start var
     double T;
-    unsigned int gasIndex;
+
     std::vector<double> m_h;
 
     std::vector<Cell*> m_next;
     std::vector<Cell*> m_prev;
 
-    double* m_value;
-    double* m_half;
+    std::vector<double*> m_value;
+    std::vector<double*> m_half;
 public:
     Cell();
     void Init();
-    double getTemperature();
-    double getDensity();
+    void InitBase();
+    double getTemperature(int gas);
+    double getDensity(int gas);
 
     void ComputeHalf(Dimention dim);
     void ComputeValue(Dimention dim);

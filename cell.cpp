@@ -27,29 +27,34 @@ Cell::Cell() {
   m_next.push_back(NULL);
   m_next.push_back(NULL);
 
-  gasIndex = 0;
-
-  m_half = NULL;
-  m_value = NULL;
+  m_half.resize(P->gas.size(), NULL);
+  m_value.resize(P->gas.size(), NULL);
 }
 
 void Cell::Init() {
-    double mT = P->gas[gasIndex]->mass*T;
+  for(int gasIndex=0;gasIndex<P->gas.size();gasIndex++) {
     double C = 0.0;
     for(unsigned int impulseIndex=0;impulseIndex<P->impulse->value.size();impulseIndex++) {
         C += exp_erg(P->gas[gasIndex]->mass, T, P->impulse->value[impulseIndex]);
     }
-	  C *= P->impulse->d3P;
+
+    C *= P->impulse->d3P;
     C = 1.0/C;
 
     // Allocating space for values and half's
-    m_half = new double[P->impulse->value.size()];
-    m_value = new double[P->impulse->value.size()];
+    m_half[gasIndex] = new double[P->impulse->value.size()];
+    m_value[gasIndex] = new double[P->impulse->value.size()];
 
-	  for(unsigned int impulseIndex=0;impulseIndex<P->impulse->value.size();impulseIndex++) {
-		  m_value[impulseIndex] = C*exp_erg(P->gas[gasIndex]->mass, T, P->impulse->value[impulseIndex]);
+          for(unsigned int impulseIndex=0;impulseIndex<P->impulse->value.size();impulseIndex++) {
+                  m_value[gasIndex][impulseIndex] = C*exp_erg(P->gas[gasIndex]->mass, T, P->impulse->value[impulseIndex]);
       //m_half[impulseIndex] = 0.0;
     }
+  }
+}
+
+void Cell::InitBase() {
+  m_half = new double[P->impulse->value.size()];
+  m_value = new double[P->impulse->value.size()];
 }
 
 void Cell::ComputeHalf(Cell::Dimention dim)
@@ -209,7 +214,7 @@ double Cell::getTemperature() {
 }
 
 double Cell::getDensity() {
-  if(!m_value) return T;
+  if(!m_value) return 0.0;
 
   double density = 0.0;
   for(unsigned int impulseIndex=0;impulseIndex<P->impulse->value.size();impulseIndex++) {

@@ -22,6 +22,7 @@ public:
   std::vector< std::vector<double> > value;
   double dP;
   double d3P;
+  int*** xyz2i;
 public:
   Impulse(unsigned int size, double cutSpeed)
     :n(size),
@@ -29,6 +30,16 @@ public:
   {
     dP = 2*cut/(n-1);
     d3P = std::pow(dP, 3);
+    xyz2i = new int**[n];
+    for(int x=0;x<n;x++) {
+      xyz2i[x] = new int*[n];
+      for(int y=0;y<n;y++) {
+        xyz2i[x][y] = new int[n];
+        for(int z=0;z<n;z++) {
+          xyz2i[x][y][z] = -1;
+        }
+      }
+    }
     double* line_impulse = new double[n];
     for(unsigned int i=0;i<n;i++) {
       //cut*(2.0*i/(n-1)-1);
@@ -43,6 +54,7 @@ public:
           impulse3d.push_back(line_impulse[y]);
           impulse3d.push_back(line_impulse[z]);
           if(mod_vec(impulse3d) < cut) {
+            xyz2i[x][y][z] = value.size();
             value.push_back(impulse3d);
           }
         }

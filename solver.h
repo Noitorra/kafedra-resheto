@@ -44,6 +44,8 @@ private:
 
     void syncSaveMacro();
     void writeMacroData(std::vector< std::vector<double> >& data, int gas);
+
+    void makeIntegral(int gas1, int gas2);
 };
 
 #endif // SOLVER_H

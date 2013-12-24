@@ -22,14 +22,14 @@ int main(int argc, char* argv[])
     P->mpi_type = Param::MPI_NORMAL;
 
   P->impulse = new Impulse(20, 4.8);
-  P->timestep = 0.1;
+  P->timestep = 0.01;
   P->gas.push_back(new Gas(1.0));
   P->gas.push_back(new Gas(0.5));
 
   Solver solver;
-  solver.originNx = 80;
-  solver.originNy = 40;
-  solver.max_iter = 100;
+  solver.originNx = 120;
+  solver.originNy = 60;
+  solver.max_iter = 1000;
   solver.Initialize();
   solver.Run();
 

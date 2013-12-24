@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "integral/ci.hpp"
+
 template <typename T>
 std::string ToString(T x) {
   std::ostringstream os;
@@ -49,18 +51,18 @@ void Solver::Initialize() {
         cell = NULL;
       } else if(block1 == 2) {
         cell = new Cell();
-        cell->m_h.push_back(1.0);
-        cell->m_h.push_back(1.0);
+        cell->m_h.push_back(0.1);
+        cell->m_h.push_back(0.1);
         cell->T = 0.5;
       } else if(block2 == 2) {
          cell = new Cell();
-        cell->m_h.push_back(1.0);
-        cell->m_h.push_back(1.0);
+        cell->m_h.push_back(0.1);
+        cell->m_h.push_back(0.1);
         cell->T = 1.0;
       } else {
         cell = new Cell();
-        cell->m_h.push_back(1.0);
-        cell->m_h.push_back(1.0);
+        cell->m_h.push_back(0.1);
+        cell->m_h.push_back(0.1);
         cell->T = 0.5;
       }
       m_cell.push_back(cell);
@@ -310,6 +312,10 @@ Cell* Solver::GetCell(unsigned int x, unsigned int y) {
 }
 
 void Solver::Run() {
+  ci::HSPotential potential;
+  ci::init(&potential, ci::NO_SYMM);
+  
+
   for(iter=0;iter<max_iter;iter++) {
     MPI::COMM_WORLD.Barrier();
 
@@ -330,6 +336,13 @@ void Solver::Run() {
       if(m_cell[i]) m_cell[i]->ComputeValue(Cell::Y);
     }
 
+
+    // apply integral 
+    makeIntegral(0, 0);
+    makeIntegral(1, 1);
+    makeIntegral(0, 1);
+    makeIntegral(1, 0);
+   
     //saveMacroData();
     syncSaveMacro();
     MPI::COMM_WORLD.Barrier();
@@ -340,6 +353,22 @@ void Solver::Run() {
   if(P->mpi_rank==0) {
     cout << "Done" << std::endl;
   }
+}
+
+void Solver::makeIntegral(int gas1, int gas2) {
+    ci::Particle particle;
+    particle.d = 1.0;
+    ci::gen(P->timestep, 50000, P->impulse->n/2, P->impulse->n/2,
+        P->impulse->xyz2i,
+        P->impulse->xyz2i,
+        P->impulse->cut,
+        P->gas[gas1]->mass,
+        P->gas[gas2]->mass,
+        particle, particle);
+
+    for(unsigned int i=0;i<m_cell.size();i++) {
+      if(m_cell[i]) ci::iter(m_cell[i]->m_value[gas1], m_cell[i]->m_value[gas2]);
+    }
 }
 
 void Solver::syncSaveMacro() {

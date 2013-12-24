@@ -1,0 +1,4 @@
+c++ -o resheto.bin cell.cpp cell.h header.h main.cpp param.cpp param.h solver.h solver.cpp
+mpirun -n 4 resheto.bin
+python graph.py
+ffmpeg -r 60 -y -i "data/Den/Pic/%d.png" output.mp4

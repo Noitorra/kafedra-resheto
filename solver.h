@@ -43,7 +43,7 @@ private:
     void sync();
 
     void syncSaveMacro();
-    void writeMacroData(std::vector< std::vector<double> >& data);
+    void writeMacroData(std::vector< std::vector<double> >& data, int gas);
 };
 
 #endif // SOLVER_H

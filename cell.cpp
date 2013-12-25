@@ -170,6 +170,7 @@ void Cell::computeHalf_Left(Cell::Dimention dim)
 
 void Cell::computeValue_Left(Cell::Dimention dim)
 {
+
 }
 
 void Cell::computeHalf_Right(Cell::Dimention dim)
@@ -219,8 +220,32 @@ void Cell::computeValue_PreRight(Cell::Dimention dim)
 }
 
 // Macroparams
-double Cell::getTemperature(int gas) {
-  return T;
+double Cell::getTemperature(int gi) {
+  double temp = 0.0;
+  double dens = getDensity(gi);
+  vector<double> uvec;
+  uvec.resize(3, 0.0);
+
+  for(unsigned int ii=0;ii<P->impulse->value.size();ii++) {
+    for(int vi=0;vi<uvec.size();vi++) {
+      uvec[vi] += P->impulse->value[ii][vi]/P->gas[gi]->mass*m_value[gi][ii];
+    }
+  }
+  for(int vi=0;vi<uvec.size();vi++) {
+    uvec[vi] *= P->impulse->d3P/dens;
+  }
+  
+
+  for(unsigned int ii=0;ii<P->impulse->value.size();ii++) {
+    for(int vi=0;vi<uvec.size();vi++) {
+      uvec[vi] = P->impulse->value[ii][vi]/P->gas[gi]->mass - uvec[vi];
+    }
+    uvec[2] = 0.0;
+    temp += P->gas[gi]->mass*mod_vec(uvec)*mod_vec(uvec)*m_value[gi][ii];
+  }
+  //cout << uvec[0] << ":" << uvec[1] << ":" << uvec[2] << endl;
+  temp *= P->impulse->d3P/dens/3;
+  return temp;
 }
 
 double Cell::getDensity(int gas) {

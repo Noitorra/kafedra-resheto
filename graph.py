@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import numpy
 from numpy import *
 
-NX = 40
-NY = 80
-max_files = 100
+NX = 60
+NY = 120
+max_files = 50
 gas_num = 2
 
 for gas in range(gas_num):
@@ -14,9 +14,19 @@ for gas in range(gas_num):
   for i in range(max_files):
     s = "%i" % i
     D = numpy.fromfile(data_folder+'Den/'+s+'.bin', dtype=float).reshape(NX, NY)
-    plt.imshow(D, vmin=0.0, vmax=1.0, interpolation='nearest')
+    plt.imshow(D, vmin=0.5, vmax=1.5, interpolation='nearest')
     plt.colorbar()
-    plt.savefig(data_folder+'Den/Pic/'+s+'.png')
+    plt.contour(D, colors='black')
+    plt.savefig(data_folder+'Den/Pic/'+s+'.png', dpi=100)
+    plt.close()
+    print("%i of %i" % (i, max_files))
+  for i in range(max_files):
+    s = "%i" % i
+    D = numpy.fromfile(data_folder+'Temp/'+s+'.bin', dtype=float).reshape(NX, NY)
+    plt.imshow(D, interpolation='nearest')
+    plt.colorbar()
+    plt.contour(D, colors='black')
+    plt.savefig(data_folder+'Temp/Pic/'+s+'.png', dpi=100)
     plt.close()
     print("%i of %i" % (i, max_files))
 

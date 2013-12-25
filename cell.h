@@ -24,7 +24,7 @@ public:
     Cell();
     void Init();
     void InitBase();
-    double getTemperature(int gas);
+    double getTemperature(int gi);
     double getDensity(int gas);
 
     void ComputeHalf(Dimention dim);

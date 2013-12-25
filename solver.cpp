@@ -374,56 +374,72 @@ void Solver::makeIntegral(int gas1, int gas2) {
 void Solver::syncSaveMacro() {
   for(int gasIndex=0;gasIndex<P->gas.size();gasIndex++) {
     double* density = new double[m_cell.size()];
+    double* temp = new double[m_cell.size()];
     for(unsigned int i=0;i<m_cell.size();i++) {
       if(m_cell[i]) {
         density[i] = m_cell[i]->getDensity(gasIndex);
+        temp[i] = m_cell[i]->getTemperature(gasIndex);
       } else {
         //cout << "OPA:" << i <<endl;
         density[i] = 0.0;
+        temp[i] = 0.0;
       }
       //cout << density[i];
     }
     if(P->mpi_rank == 0) {
       std::vector< std::vector<double> > vvden;
       vvden.resize(Ny);
+      std::vector< std::vector<double> > vvtemp;
+      vvtemp.resize(Ny);
       for(int rank=0;rank<P->mpi_size;rank++) {
-        std::vector<double> loc_vec;
+        std::vector<double> loc_vec_den;
+        std::vector<double> loc_vec_temp;
         if(rank==0) {
           // interesting !!
           for(unsigned int y=0;y<Ny;y++) {
             for(unsigned int x=0;x<Nx;x++) {
               vvden[y].push_back(density[y*Nx+x]);
+              vvtemp[y].push_back(temp[y*Nx+x]);
             }
           }
         } else {
           int rNx;
           MPI::COMM_WORLD.Recv(&rNx, 1, MPI::INT, rank, 30);
           double* denr = new double[rNx*Ny];
+          double* tempr = new double[rNx*Ny];
           MPI::COMM_WORLD.Recv(denr, rNx*Ny, MPI::DOUBLE, rank, 31);
+          MPI::COMM_WORLD.Recv(tempr, rNx*Ny, MPI::DOUBLE, rank, 32);
           // same interest !!
            for(unsigned int y=0;y<Ny;y++) {
             for(unsigned int x=0;x<rNx;x++) {
               vvden[y].push_back(denr[y*rNx+x]);
+              vvtemp[y].push_back(tempr[y*rNx+x]);
             }
           }
           delete []denr;
+          delete []tempr;
         }
       }
       // writing whole thing to file
-      writeMacroData(vvden, gasIndex);
+      writeMacroData(vvden, gasIndex, 0);
+      writeMacroData(vvtemp, gasIndex, 1);
 
     } else {
       int sNx = Nx;
       MPI::COMM_WORLD.Send(&sNx, 1, MPI::INT, 0, 30);
       MPI::COMM_WORLD.Send(density, m_cell.size(), MPI::DOUBLE, 0, 31);
+      MPI::COMM_WORLD.Send(temp, m_cell.size(), MPI::DOUBLE, 0, 32);
     }
     delete []density;
   }
 }
 
-void Solver::writeMacroData(std::vector< std::vector<double> >& data, int gas) {
+void Solver::writeMacroData(std::vector< std::vector<double> >& data, int gas, int data_type) {
   std::string filename;
-  filename = "data/Gas" + ToString(gas) + "/Den/" + ToString(iter) + ".bin";
+  if(data_type == 0)
+    filename = "data/Gas" + ToString(gas) + "/Den/" + ToString(iter) + ".bin";
+  else if(data_type == 1) 
+    filename = "data/Gas" + ToString(gas) + "/Temp/" + ToString(iter) + ".bin";
   //cout << filename << endl;
 
   std::ofstream fs(filename.c_str(), std::ios::out | std::ios::binary);

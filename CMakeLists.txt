@@ -1,11 +1,12 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
-PROJECT(Resheto)
+project(kafedra-resheto)
 
-#INCLUDE_DIRECTORIES(/usr/include/openmpi)
+# Require MPI for this project:
+find_package(MPI REQUIRED)
+set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
+set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
 
-file(GLOB R_SRC ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.h)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../bin/")
 
-source_group(Resheto FILES ${R_SRC})
-
-ADD_EXECUTABLE(Resheto ${R_SRC})
+ADD_SUBDIRECTORY(src)

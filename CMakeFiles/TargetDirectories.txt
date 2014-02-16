@@ -1,0 +1,1 @@
+/home/kisame/Work/Kafedra/kafedra-resheto/src/CMakeFiles/kafedra-resheto.dir

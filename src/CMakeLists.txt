@@ -14,7 +14,3 @@ add_executable(${MY_EXEC} ${MAIN_SOURCE} ${INTEGRAL_SOURCE})
 # MPI
 include_directories(${MPI_INCLUDE_PATH})
 target_link_libraries(${MY_EXEC} ${MPI_LIBRARIES})
-
-# Add a test:
-enable_testing()
-add_test(MPILaunchQuad ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 4 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${MY_EXEC})

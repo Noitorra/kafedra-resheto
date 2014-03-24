@@ -7,9 +7,8 @@ inline double exp_erg(const double& mass, const double& temp, const std::vector<
 
 class Cell {
 public:
-    enum Dimention { X = 0,
-                     Y = 1,
-                     Z = 2 };
+	typedef std::vector<Cell*> CellList;
+	enum Dimention {X, Y, Z};
 	// start var
     double T;
 
